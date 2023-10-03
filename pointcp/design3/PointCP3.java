@@ -33,6 +33,9 @@ public class PointCP3
    * type of coordinates.
    */
   private double yOrTheta;
+
+  private double x;
+  private double y;
 	
   
   //Constructors ******************************************************
@@ -40,13 +43,10 @@ public class PointCP3
   /**
    * Constructs a coordinate object, with a type identifier.
    */
-  public PointCP3(char type, double xOrRho, double yOrTheta)
+  public PointCP3(double x, double y)
   {
-    if(type != 'C' && type != 'P')
-      throw new IllegalArgumentException();
-    this.xOrRho = xOrRho;
-    this.yOrTheta = yOrTheta;
-    typeCoord = type;
+    this.x = x;
+    this.y = y;
   }
 	
   
@@ -55,34 +55,22 @@ public class PointCP3
  
   public double getX()
   {
-    if(typeCoord == 'C') 
-      return xOrRho;
-    else 
-      return (Math.cos(Math.toRadians(yOrTheta)) * xOrRho);
+    return x;
   }
   
   public double getY()
   {
-    if(typeCoord == 'C') 
-      return yOrTheta;
-    else 
-      return (Math.sin(Math.toRadians(yOrTheta)) * xOrRho);
+    return y;
   }
   
   public double getRho()
   {
-    if(typeCoord == 'P') 
-      return xOrRho;
-    else 
-      return (Math.sqrt(Math.pow(xOrRho, 2) + Math.pow(yOrTheta, 2)));
+    return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
   }
   
   public double getTheta()
   {
-    if(typeCoord == 'P')
-      return yOrTheta;
-    else 
-      return Math.toDegrees(Math.atan2(yOrTheta, xOrRho));
+    return Math.toDegrees(Math.atan2(y, x));
   }
   
 	
@@ -91,15 +79,7 @@ public class PointCP3
    */
   public void convertStorageToPolar()
   {
-    if(typeCoord != 'P')
-    {
-      //Calculate RHO and THETA
-      double temp = getRho();
-      yOrTheta = getTheta();
-      xOrRho = temp;
-      
-      typeCoord = 'P';  //Change coord type identifier
-    }
+    //Empty for this design
   }
 	
   /**
@@ -107,15 +87,7 @@ public class PointCP3
    */
   public void convertStorageToCartesian()
   {
-    if(typeCoord != 'C')
-    {
-      //Calculate X and Y
-      double temp = getX();
-      yOrTheta = getY();
-      xOrRho = temp;
-   
-      typeCoord = 'C';	//Change coord type identifier
-    }
+    //Empty for this design
   }
 
   /**
@@ -130,8 +102,8 @@ public class PointCP3
   {
     // Obtain differences in X and Y, sign is not important as these values
     // will be squared later.
-    double deltaX = getX() - pointB.getX();
-    double deltaY = getY() - pointB.getY();
+    double deltaX = x - pointB.getX();
+    double deltaY = y - pointB.getY();
     
     return Math.sqrt((Math.pow(deltaX, 2) + Math.pow(deltaY, 2)));
   }
@@ -147,12 +119,10 @@ public class PointCP3
   public PointCP3 rotatePoint(double rotation)
   {
     double radRotation = Math.toRadians(rotation);
-    double X = getX();
-    double Y = getY();
-        
-    return new PointCP3('C',
-      (Math.cos(radRotation) * X) - (Math.sin(radRotation) * Y),
-      (Math.sin(radRotation) * X) + (Math.cos(radRotation) * Y));
+    double newX = (Math.cos(radRotation) * x) - (Math.sin(radRotation) * y);
+    double newY = (Math.sin(radRotation) * x) + (Math.cos(radRotation) * y);
+
+    return new PointCP3(newX, newY);
   }
 
   /**
@@ -162,8 +132,6 @@ public class PointCP3
    */
   public String toString()
   {
-    return "Stored as " + (typeCoord == 'C' 
-       ? "Cartesian  (" + getX() + "," + getY() + ")"
-       : "Polar [" + getRho() + "," + getTheta() + "]") + "\n";
+    return "Cartesian (" + getX() + "," + getY() + ")";
   }
 }
