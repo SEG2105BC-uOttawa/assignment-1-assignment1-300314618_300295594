@@ -31,7 +31,7 @@ public class Part2 {
         long vectorIterationTime = 0;
         long arrayIterationTime = 0;
 
-        for (int i = 0; i < 10000; i++) { //about 10 seconds for ArrayList
+        for (int i = 0; i < 2250; i++) { //about 10 seconds for ArrayList construction
             arrayListIterationTime += testArrayListIteration(randomIntegers);
             vectorIterationTime += testVectorIteration(randomIntegers);
             arrayIterationTime += testArrayIteration(randomIntegers);
