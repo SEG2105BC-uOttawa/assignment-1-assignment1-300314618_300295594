@@ -9,13 +9,19 @@ public class Part2 {
         int size = 1000000;
         int[] randomIntegers = generateRandomIntegers(size);
 
-        long arrayListTime = testArrayListConstruction(randomIntegers);
-        //long vectorTime = testVectorConstruction(randomIntegers);
-        //long arrayTime = testArrayConstruction(randomIntegers);
+        long arrayListTime = 0;
+        long vectorTime = 0;
+        long arrayTime = 0;
+
+        for (int i = 0; i < 2250; i++) { //about 10 seconds
+            arrayListTime += testArrayListConstruction(randomIntegers);
+            vectorTime += testVectorConstruction(randomIntegers);
+            arrayTime += testArrayConstruction(randomIntegers);
+        }
 
         System.out.println("ArrayList construction time: " + arrayListTime + " ms");
-        //System.out.println("Vector construction time: " + vectorTime + " ms");
-        //System.out.println("Array construction time: " + arrayTime + " ms");
+        System.out.println("Vector construction time: " + vectorTime + " ms");
+        System.out.println("Array construction time: " + arrayTime + " ms");
     }
 
     private static int[] generateRandomIntegers(int size) {
