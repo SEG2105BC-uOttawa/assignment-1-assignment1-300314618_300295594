@@ -26,43 +26,48 @@ public class PointCP2
    * Contains the current value of X or RHO depending on the type
    * of coordinates.
    */
-  private double xOrRho;
+  private double rho;
   
   /**
    * Contains the current value of Y or THETA value depending on the
    * type of coordinates.
    */
-  private double yOrTheta;
-
-  private double rho;
   private double theta;
-	
-  
+
   //Constructors ******************************************************
 
   /**
    * Constructs a coordinate object, with a type identifier.
    */
-  public PointCP2(double rho, double theta)
+  public PointCP2(char type, double xOrRho, double yOrTheta)
   {
-    this.rho = rho;
-    this.theta = theta;
+    if(type != 'C' && type != 'P')
+      throw new IllegalArgumentException();
+
+    this.rho = xOrRho;
+    this.theta = yOrTheta;
+
+    if(type == 'C')
+    {
+      rho = Math.sqrt(Math.pow(xOrRho, 2) + Math.pow(yOrTheta, 2));
+      theta = Math.toDegrees(Math.atan2(yOrTheta, xOrRho));
+    }
+
+    typeCoord = 'P';
   }
 	
   
   //Instance methods **************************************************
  
-  //rounding down to 0 if less than 1E-10
+ 
   public double getX()
   {
-    double temp = Math.cos(Math.toRadians(theta)) * rho;
-    return temp < 1.0E-10 ? 0 : temp;
+    return Math.cos(Math.toRadians(theta)) * rho;
   }
   
   public double getY()
   {
-    double temp = Math.sin(Math.toRadians(theta)) * rho;
-    return temp < 1.0E-10 ? 0 : temp;
+    return Math.sin(Math.toRadians(theta)) * rho;
   }
   
   public double getRho()
@@ -81,7 +86,7 @@ public class PointCP2
    */
   public void convertStorageToPolar()
   {
-    //Empty for this design
+    //
   }
 	
   /**
@@ -89,7 +94,18 @@ public class PointCP2
    */
   public void convertStorageToCartesian()
   {
-    //Empty for this design
+    //
+  }
+
+
+  public PointCP2 getCartesian()
+  {
+    return new PointCP2('P', getX(), getY());
+  }
+
+  public PointCP2 getPolar()
+  {
+    return this;
   }
 
   /**
@@ -121,10 +137,12 @@ public class PointCP2
   public PointCP2 rotatePoint(double rotation)
   {
     double radRotation = Math.toRadians(rotation);
-    double newX = (Math.cos(radRotation) * getX()) - (Math.sin(radRotation) * getY());
-    double newY = (Math.sin(radRotation) * getY()) + (Math.cos(radRotation) * getY());
-
-    return new PointCP2(newX, newY);
+    double X = getX();
+    double Y = getY();
+        
+    return new PointCP2('C',
+      (Math.cos(radRotation) * X) - (Math.sin(radRotation) * Y),
+      (Math.sin(radRotation) * X) + (Math.cos(radRotation) * Y));
   }
 
   /**
@@ -134,6 +152,6 @@ public class PointCP2
    */
   public String toString()
   {
-    return "Polar (" + getRho() + "," + getTheta() + ")";
+    return "(" + getRho() + ", " + getTheta() + ")";
   }
 }

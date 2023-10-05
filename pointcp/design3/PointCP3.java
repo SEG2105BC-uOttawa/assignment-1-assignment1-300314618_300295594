@@ -26,27 +26,34 @@ public class PointCP3
    * Contains the current value of X or RHO depending on the type
    * of coordinates.
    */
-  private double xOrRho;
+  private double x;
   
   /**
    * Contains the current value of Y or THETA value depending on the
    * type of coordinates.
    */
-  private double yOrTheta;
-
-  private double x;
   private double y;
-	
-  
+
   //Constructors ******************************************************
 
   /**
    * Constructs a coordinate object, with a type identifier.
    */
-  public PointCP3(double x, double y)
+  public PointCP3(char type, double xOrRho, double yOrTheta)
   {
-    this.x = x;
-    this.y = y;
+    if(type != 'C' && type != 'P')
+      throw new IllegalArgumentException();
+
+    this.x = xOrRho;
+    this.y = yOrTheta;
+
+    if(type == 'P')
+    {
+      x = (Math.cos(Math.toRadians(yOrTheta)) * xOrRho);
+      y = (Math.sin(Math.toRadians(yOrTheta)) * xOrRho);
+    }
+
+    typeCoord = 'C';
   }
 	
   
@@ -65,7 +72,7 @@ public class PointCP3
   
   public double getRho()
   {
-    return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+    return (Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)));
   }
   
   public double getTheta()
@@ -79,7 +86,7 @@ public class PointCP3
    */
   public void convertStorageToPolar()
   {
-    //Empty for this design
+    //
   }
 	
   /**
@@ -87,7 +94,18 @@ public class PointCP3
    */
   public void convertStorageToCartesian()
   {
-    //Empty for this design
+    //
+  }
+
+
+  public PointCP3 getCartesian()
+  {
+    return this;
+  }
+
+  public PointCP3 getPolar()
+  {
+    return new PointCP3('C', getRho(), getTheta());
   }
 
   /**
@@ -102,8 +120,8 @@ public class PointCP3
   {
     // Obtain differences in X and Y, sign is not important as these values
     // will be squared later.
-    double deltaX = x - pointB.getX();
-    double deltaY = y - pointB.getY();
+    double deltaX = getX() - pointB.getX();
+    double deltaY = getY() - pointB.getY();
     
     return Math.sqrt((Math.pow(deltaX, 2) + Math.pow(deltaY, 2)));
   }
@@ -119,10 +137,12 @@ public class PointCP3
   public PointCP3 rotatePoint(double rotation)
   {
     double radRotation = Math.toRadians(rotation);
-    double newX = (Math.cos(radRotation) * x) - (Math.sin(radRotation) * y);
-    double newY = (Math.sin(radRotation) * x) + (Math.cos(radRotation) * y);
-
-    return new PointCP3(newX, newY);
+    double X = getX();
+    double Y = getY();
+        
+    return new PointCP3('C',
+      (Math.cos(radRotation) * X) - (Math.sin(radRotation) * Y),
+      (Math.sin(radRotation) * X) + (Math.cos(radRotation) * Y));
   }
 
   /**
@@ -132,6 +152,6 @@ public class PointCP3
    */
   public String toString()
   {
-    return "Cartesian (" + getX() + "," + getY() + ")";
+    return "(" + getX() + ", " + getY() + ")";
   }
 }
